@@ -1,0 +1,220 @@
+
+library(ggnewscale)
+library(ggplot2)
+windowsFonts(myFont=windowsFont("Arial"))#要修改字体，先要初始化字体
+
+##### CK ####
+spe<-read.table(file="CK.txt",header=T,check.names=FALSE,sep="\t")
+head(spe)
+rownames(spe) <-spe[,1]
+spe<-spe[,-1]
+spe<-na.omit(spe)
+pd <- position_dodge(0.5) 
+A=spe[spe$group=="A",]        
+B=spe[spe$group=="B",]
+
+p1<-ggplot(spe, aes(x=APE, y=N)) + 
+  geom_point(data=B,position=pd, size=4, shape=21,aes(colour=Phylum,fill=group)) +
+  scale_fill_manual(values =alpha(("black"),0.4))+
+  scale_color_manual(values=c("Acetothermia"="#3C3A8D","Acidobacteria"="#BC75AF",
+                              "Actinobacteria"="#b2e2e2","Armatimonadetes"="#000000","Bacteroidetes"="#44A8DB",
+                              "BRC1"="#57B78C","candidate_division_WPS-1"="#EA711B","candidate_division_WPS-2"="#CECE05","Candidatus_Saccharibacteria"="#D72226","Chlamydiae"="#AA9953","Chloroflexi"="#093A3A","Cyanobacteria"="#02759E",
+                              "Deinococcus-Thermus"="#3A398C","Firmicutes"="#74B662","Gemmatimonadetes"="#FFBB78FF","Latescibacteria"="#B53C0D","Microgenomates"="#C49C94FF","Nitrospirae"="#03F1F7","Planctomycetes"="#F962C3","Proteobacteria"="#F95A5A","Tenericutes"="#0808B7",
+                              "Verrucomicrobia"="#144404","Unassigned"="#5B4B4B"))+
+  new_scale_fill() +#
+  new_scale_color() +###很重要，加另外的图,颜色重置
+  geom_point(data=A,position=pd, size=4, shape=21, colour="black",aes(fill=Phylum)) + 
+  scale_fill_manual(values=c("Acetothermia"="#3C3A8D","Acidobacteria"="#BC75AF",
+                             "Actinobacteria"="#b2e2e2","Armatimonadetes"="#000000","Bacteroidetes"="#44A8DB",
+                             "BRC1"="#57B78C","candidate_division_WPS-1"="#EA711B","candidate_division_WPS-2"="#CECE05","Candidatus_Saccharibacteria"="#D72226","Chlamydiae"="#AA9953","Chloroflexi"="#093A3A","Cyanobacteria"="#02759E",
+                             "Deinococcus-Thermus"="#3A398C","Firmicutes"="#74B662","Gemmatimonadetes"="#FFBB78FF","Latescibacteria"="#B53C0D","Microgenomates"="#C49C94FF","Nitrospirae"="#03F1F7","Planctomycetes"="#F962C3","Proteobacteria"="#F95A5A","Tenericutes"="#0808B7",
+                             "Verrucomicrobia"="#144404","Unassigned"="#5B4B4B"))+
+  geom_errorbarh(data=B,aes(xmin=CL, xmax=CU,alpha=0.5), height=.2, position=pd,size=1,colour="grey")+
+  geom_errorbarh(data=A,aes(xmin=CL, xmax=CU,colour=Phylum,alpha=0.5), height=.2, position=pd,size=1)+
+  scale_colour_manual(values=c("Acetothermia"="#3C3A8D","Acidobacteria"="#BC75AF",
+                               "Actinobacteria"="#b2e2e2","Armatimonadetes"="#000000","Bacteroidetes"="#44A8DB",
+                               "BRC1"="#57B78C","candidate_division_WPS-1"="#EA711B","candidate_division_WPS-2"="#CECE05",
+                               "Candidatus_Saccharibacteria"="#D72226","Chlamydiae"="#AA9953","Chloroflexi"="#093A3A","Cyanobacteria"="#02759E",
+                               "Deinococcus-Thermus"="#3A398C","Firmicutes"="#74B662","Gemmatimonadetes"="#FFBB78FF","Latescibacteria"="#B53C0D","Microgenomates"="#C49C94FF","Nitrospirae"="#03F1F7","Planctomycetes"="#F962C3","Proteobacteria"="#F95A5A","Tenericutes"="#0808B7",
+                               "Verrucomicrobia"="#144404","Unassigned"="#5B4B4B"))+
+  theme_bw()+
+  theme(legend.position="none")+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.line=element_line(colour="black",size=1))+
+  theme(axis.text.y = element_blank(),axis.ticks.y = element_blank())+
+  theme(axis.text.x= element_text(size=12, family="myFont", color="black", face= "bold.italic", vjust=0.5, hjust=0.5),
+        element_line(colour="black",size=1))+
+  geom_vline(aes(xintercept=0),linetype="dashed")+
+  xlim(-0.15,0.25)+
+  xlab("Excess atom fraction 18O") +
+  ylab("Ranked OTUs") +##OTU用ylab("Ranked OTUs");genus用ylab("Genus")
+  ggtitle("CK")+
+  theme(title= element_text(size=15, family="myFont", color="black", face= "bold", vjust=0.5, hjust=0.5))+
+  theme(plot.title = element_text(hjust = 0.5))+
+  geom_text(aes(label = Phylum1,colour=Phylum,x = 0.2))
+p1
+ggsave("APE_CK.pdf",device=cairo_pdf,width=4,height=8)
+
+
+#### NPK ####
+spe<-read.table(file="NPK.txt",header=T,check.names=FALSE,sep="\t")
+head(spe)
+rownames(spe) <-spe[,1]
+spe<-spe[,-1]
+spe<-na.omit(spe)
+pd <- position_dodge(0.5) 
+A=spe[spe$group=="A",]        
+B=spe[spe$group=="B",]
+p2<-ggplot(spe, aes(x=APE, y=N)) + 
+  geom_point(data=B,position=pd, size=4, shape=21,aes(colour=Phylum,fill=group)) +
+  scale_fill_manual(values =alpha(("black"),0.4))+
+  scale_color_manual(values=c("Acetothermia"="#3C3A8D","Acidobacteria"="#BC75AF",
+                              "Actinobacteria"="#b2e2e2","Armatimonadetes"="#000000","Bacteroidetes"="#44A8DB",
+                              "BRC1"="#57B78C","candidate_division_WPS-1"="#EA711B","candidate_division_WPS-2"="#CECE05","Candidatus_Saccharibacteria"="#D72226","Chlamydiae"="#AA9953","Chloroflexi"="#093A3A","Cyanobacteria"="#02759E",
+                              "Deinococcus-Thermus"="#3A398C","Firmicutes"="#74B662","Gemmatimonadetes"="#FFBB78FF","Latescibacteria"="#B53C0D","Microgenomates"="#C49C94FF","Nitrospirae"="#03F1F7","Planctomycetes"="#F962C3","Proteobacteria"="#F95A5A","Tenericutes"="#0808B7",
+                              "Verrucomicrobia"="#144404","Unassigned"="#5B4B4B"))+
+  new_scale_fill() +#
+  new_scale_color() +###很重要，加另外的图,颜色重置
+  geom_point(data=A,position=pd, size=4, shape=21, colour="black",aes(fill=Phylum)) + 
+  scale_fill_manual(values=c("Acetothermia"="#3C3A8D","Acidobacteria"="#BC75AF",
+                             "Actinobacteria"="#b2e2e2","Armatimonadetes"="#000000","Bacteroidetes"="#44A8DB",
+                             "BRC1"="#57B78C","candidate_division_WPS-1"="#EA711B","candidate_division_WPS-2"="#CECE05","Candidatus_Saccharibacteria"="#D72226","Chlamydiae"="#AA9953","Chloroflexi"="#093A3A","Cyanobacteria"="#02759E",
+                             "Deinococcus-Thermus"="#3A398C","Firmicutes"="#74B662","Gemmatimonadetes"="#FFBB78FF","Latescibacteria"="#B53C0D","Microgenomates"="#C49C94FF","Nitrospirae"="#03F1F7","Planctomycetes"="#F962C3","Proteobacteria"="#F95A5A","Tenericutes"="#0808B7",
+                             "Verrucomicrobia"="#144404","Unassigned"="#5B4B4B"))+
+  geom_errorbarh(data=B,aes(xmin=CL, xmax=CU,alpha=0.5), height=.2, position=pd,size=1,colour="grey")+
+  geom_errorbarh(data=A,aes(xmin=CL, xmax=CU,colour=Phylum,alpha=0.5), height=.2, position=pd,size=1)+
+  scale_colour_manual(values=c("Acetothermia"="#3C3A8D","Acidobacteria"="#BC75AF",
+                               "Actinobacteria"="#b2e2e2","Armatimonadetes"="#000000","Bacteroidetes"="#44A8DB",
+                               "BRC1"="#57B78C","candidate_division_WPS-1"="#EA711B","candidate_division_WPS-2"="#CECE05",
+                               "Candidatus_Saccharibacteria"="#D72226","Chlamydiae"="#AA9953","Chloroflexi"="#093A3A","Cyanobacteria"="#02759E",
+                               "Deinococcus-Thermus"="#3A398C","Firmicutes"="#74B662","Gemmatimonadetes"="#FFBB78FF","Latescibacteria"="#B53C0D","Microgenomates"="#C49C94FF","Nitrospirae"="#03F1F7","Planctomycetes"="#F962C3","Proteobacteria"="#F95A5A","Tenericutes"="#0808B7",
+                               "Verrucomicrobia"="#144404","Unassigned"="#5B4B4B"))+
+  theme_bw()+
+  theme(legend.position="none")+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.line=element_line(colour="black",size=1))+
+  theme(axis.text.y = element_blank(),axis.ticks.y = element_blank())+
+  theme(axis.text.x= element_text(size=12, family="myFont", color="black", face= "bold.italic", vjust=0.5, hjust=0.5),
+        element_line(colour="black",size=1))+
+  geom_vline(aes(xintercept=0),linetype="dashed")+
+  xlim(-0.15,0.25)+
+  xlab("Excess atom fraction 18O") + ylab("Ranked OTUs") +##OTU用ylab("Ranked OTUs");genus用ylab("Genus")
+  ggtitle("NPK")+
+  theme(title= element_text(size=15, family="myFont", color="black", face= "bold", vjust=0.5, hjust=0.5))+
+  theme(plot.title = element_text(hjust = 0.5))+
+  geom_text(aes(label = Phylum1,colour=Phylum,x = 0.2))
+p2
+ggsave("APE_NPK.pdf",device=cairo_pdf,width=4,height=8)
+
+#### OM ####
+spe<-read.table(file="OM.txt",header=T,check.names=FALSE,sep="\t")
+head(spe)
+rownames(spe) <-spe[,1]
+spe<-spe[,-1]
+spe<-na.omit(spe)
+pd <- position_dodge(0.5) 
+A=spe[spe$group=="A",]        
+B=spe[spe$group=="B",]
+p3<-ggplot(spe, aes(x=APE, y=N)) + 
+  geom_point(data=B,position=pd, size=4, shape=21,aes(colour=Phylum,fill=group)) +
+  scale_fill_manual(values =alpha(("black"),0.4))+
+  scale_color_manual(values=c("Acetothermia"="#3C3A8D","Acidobacteria"="#BC75AF",
+                              "Actinobacteria"="#b2e2e2","Armatimonadetes"="#000000","Bacteroidetes"="#44A8DB",
+                              "BRC1"="#57B78C","candidate_division_WPS-1"="#EA711B","candidate_division_WPS-2"="#CECE05","Candidatus_Saccharibacteria"="#D72226","Chlamydiae"="#AA9953","Chloroflexi"="#093A3A","Cyanobacteria"="#02759E",
+                              "Deinococcus-Thermus"="#3A398C","Firmicutes"="#74B662","Gemmatimonadetes"="#FFBB78FF","Latescibacteria"="#B53C0D","Microgenomates"="#C49C94FF","Nitrospirae"="#03F1F7","Planctomycetes"="#F962C3","Proteobacteria"="#F95A5A","Tenericutes"="#0808B7",
+                              "Verrucomicrobia"="#144404","Unassigned"="#5B4B4B"))+
+  new_scale_fill() +#
+  new_scale_color() +###很重要，加另外的图,颜色重置
+  geom_point(data=A,position=pd, size=4, shape=21, colour="black",aes(fill=Phylum)) + 
+  scale_fill_manual(values=c("Acetothermia"="#3C3A8D","Acidobacteria"="#BC75AF",
+                             "Actinobacteria"="#b2e2e2","Armatimonadetes"="#000000","Bacteroidetes"="#44A8DB",
+                             "BRC1"="#57B78C","candidate_division_WPS-1"="#EA711B","candidate_division_WPS-2"="#CECE05","Candidatus_Saccharibacteria"="#D72226","Chlamydiae"="#AA9953","Chloroflexi"="#093A3A","Cyanobacteria"="#02759E",
+                             "Deinococcus-Thermus"="#3A398C","Firmicutes"="#74B662","Gemmatimonadetes"="#FFBB78FF","Latescibacteria"="#B53C0D","Microgenomates"="#C49C94FF","Nitrospirae"="#03F1F7","Planctomycetes"="#F962C3","Proteobacteria"="#F95A5A","Tenericutes"="#0808B7",
+                             "Verrucomicrobia"="#144404","Unassigned"="#5B4B4B"))+
+  geom_errorbarh(data=B,aes(xmin=CL, xmax=CU,alpha=0.5), height=.2, position=pd,size=1,colour="grey")+
+  geom_errorbarh(data=A,aes(xmin=CL, xmax=CU,colour=Phylum,alpha=0.5), height=.2, position=pd,size=1)+
+  scale_colour_manual(values=c("Acetothermia"="#3C3A8D","Acidobacteria"="#BC75AF",
+                               "Actinobacteria"="#b2e2e2","Armatimonadetes"="#000000","Bacteroidetes"="#44A8DB",
+                               "BRC1"="#57B78C","candidate_division_WPS-1"="#EA711B","candidate_division_WPS-2"="#CECE05",
+                               "Candidatus_Saccharibacteria"="#D72226","Chlamydiae"="#AA9953","Chloroflexi"="#093A3A","Cyanobacteria"="#02759E",
+                               "Deinococcus-Thermus"="#3A398C","Firmicutes"="#74B662","Gemmatimonadetes"="#FFBB78FF","Latescibacteria"="#B53C0D","Microgenomates"="#C49C94FF","Nitrospirae"="#03F1F7","Planctomycetes"="#F962C3","Proteobacteria"="#F95A5A","Tenericutes"="#0808B7",
+                               "Verrucomicrobia"="#144404","Unassigned"="#5B4B4B"))+
+  theme_bw()+
+  theme(legend.position="none")+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.line=element_line(colour="black",size=1))+
+  theme(axis.text.y = element_blank(),axis.ticks.y = element_blank())+
+  theme(axis.text.x= element_text(size=12, family="myFont", color="black", face= "bold.italic", vjust=0.5, hjust=0.5),
+        element_line(colour="black",size=1))+
+  geom_vline(aes(xintercept=0),linetype="dashed")+
+  xlim(-0.15,0.25)+
+  xlab("Excess atom fraction 18O") +
+  ylab("Ranked OTUs") +##OTU用ylab("Ranked OTUs");genus用ylab("Genus")
+  ggtitle("OM")+
+  theme(title= element_text(size=15, family="myFont", color="black", face= "bold", vjust=0.5, hjust=0.5))+
+  theme(plot.title = element_text(hjust = 0.5))+
+  geom_text(aes(label = Phylum1,colour=Phylum,x = 0.2))
+p3
+ggsave("APE_OM.pdf",device=cairo_pdf,width=4,height=8)
+
+#### NPKM ####
+spe<-read.table(file="NPKM.txt",header=T,check.names=FALSE,sep="\t")
+head(spe)
+rownames(spe) <-spe[,1]
+spe<-spe[,-1]
+spe<-na.omit(spe)
+pd <- position_dodge(0.5) 
+A=spe[spe$group=="A",]        
+B=spe[spe$group=="B",]
+p4<-ggplot(spe, aes(x=APE, y=N)) + 
+  geom_point(data=B,position=pd, size=4, shape=21,aes(colour=Phylum,fill=group)) +
+  scale_fill_manual(values =alpha(("black"),0.4))+
+  scale_color_manual(values=c("Acetothermia"="#3C3A8D","Acidobacteria"="#BC75AF",
+                              "Actinobacteria"="#b2e2e2","Armatimonadetes"="#000000","Bacteroidetes"="#44A8DB",
+                              "BRC1"="#57B78C","candidate_division_WPS-1"="#EA711B","candidate_division_WPS-2"="#CECE05","Candidatus_Saccharibacteria"="#D72226","Chlamydiae"="#AA9953","Chloroflexi"="#093A3A","Cyanobacteria"="#02759E",
+                              "Deinococcus-Thermus"="#3A398C","Firmicutes"="#74B662","Gemmatimonadetes"="#FFBB78FF","Latescibacteria"="#B53C0D","Microgenomates"="#C49C94FF","Nitrospirae"="#03F1F7","Planctomycetes"="#F962C3","Proteobacteria"="#F95A5A","Tenericutes"="#0808B7",
+                              "Verrucomicrobia"="#144404","Unassigned"="#5B4B4B"))+
+  new_scale_fill() +#
+  new_scale_color() +###很重要，加另外的图,颜色重置
+  geom_point(data=A,position=pd, size=4, shape=21, colour="black",aes(fill=Phylum)) + 
+  scale_fill_manual(values=c("Acetothermia"="#3C3A8D","Acidobacteria"="#BC75AF",
+                             "Actinobacteria"="#b2e2e2","Armatimonadetes"="#000000","Bacteroidetes"="#44A8DB",
+                             "BRC1"="#57B78C","candidate_division_WPS-1"="#EA711B","candidate_division_WPS-2"="#CECE05","Candidatus_Saccharibacteria"="#D72226","Chlamydiae"="#AA9953","Chloroflexi"="#093A3A","Cyanobacteria"="#02759E",
+                             "Deinococcus-Thermus"="#3A398C","Firmicutes"="#74B662","Gemmatimonadetes"="#FFBB78FF","Latescibacteria"="#B53C0D","Microgenomates"="#C49C94FF","Nitrospirae"="#03F1F7","Planctomycetes"="#F962C3","Proteobacteria"="#F95A5A","Tenericutes"="#0808B7",
+                             "Verrucomicrobia"="#144404","Unassigned"="#5B4B4B"))+
+  geom_errorbarh(data=B,aes(xmin=CL, xmax=CU,alpha=0.5), height=.2, position=pd,size=1,colour="grey")+
+  geom_errorbarh(data=A,aes(xmin=CL, xmax=CU,colour=Phylum,alpha=0.5), height=.2, position=pd,size=1)+
+  scale_colour_manual(values=c("Acetothermia"="#3C3A8D","Acidobacteria"="#BC75AF",
+                               "Actinobacteria"="#b2e2e2","Armatimonadetes"="#000000","Bacteroidetes"="#44A8DB",
+                               "BRC1"="#57B78C","candidate_division_WPS-1"="#EA711B","candidate_division_WPS-2"="#CECE05",
+                               "Candidatus_Saccharibacteria"="#D72226","Chlamydiae"="#AA9953","Chloroflexi"="#093A3A","Cyanobacteria"="#02759E",
+                               "Deinococcus-Thermus"="#3A398C","Firmicutes"="#74B662","Gemmatimonadetes"="#FFBB78FF","Latescibacteria"="#B53C0D","Microgenomates"="#C49C94FF","Nitrospirae"="#03F1F7","Planctomycetes"="#F962C3","Proteobacteria"="#F95A5A","Tenericutes"="#0808B7",
+                               "Verrucomicrobia"="#144404","Unassigned"="#5B4B4B"))+
+  theme_bw()+
+  theme(legend.position="none")+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        axis.line=element_line(colour="black",size=1))+
+  theme(axis.text.y = element_blank(),axis.ticks.y = element_blank())+
+  theme(axis.text.x= element_text(size=12, family="myFont", color="black", face= "bold.italic", vjust=0.5, hjust=0.5),
+        element_line(colour="black",size=1))+
+  geom_vline(aes(xintercept=0),linetype="dashed")+
+  xlim(-0.15,0.25)+ xlab("Excess atom fraction 18O") +
+  ylab("Ranked OTUs") +##OTU用ylab("Ranked OTUs");genus用ylab("Genus")
+  ggtitle("NPKM")+
+  theme(title= element_text(size=15, family="myFont", color="black", face= "bold", vjust=0.5, hjust=0.5))+
+  theme(plot.title = element_text(hjust = 0.5))+
+  geom_text(aes(label = Phylum1,colour=Phylum,x = 0.2))
+p4
+ggsave("APE_NPKM.pdf",device=cairo_pdf,width=4,height=8)
+
+library(ggpubr)
+ggarrange(p1,p2,p3,p4,ncol=4,nrow=1) 
+ggsave("APE_Total.pdf",device=cairo_pdf,width=16,height=8)
