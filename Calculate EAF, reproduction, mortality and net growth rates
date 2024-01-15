@@ -1,0 +1,61 @@
+
+library(phyloseq)
+# load data in
+otu <- read.table('OTU_table.txt', sep='\t', header=T, comment.char='', check.names=F)
+tax <- read.table('taxonomy.txt', sep='\t', header=T, comment.char='', check.names=F)
+sam <- read.table('samdataCK.txt', sep='\t', header=T, row.names=1, comment.char='', check.names=F)
+#sam <- read.table('samdataNPK.txt', sep='\t', header=T, row.names=1, comment.char='', check.names=F)
+#sam <- read.table('samdataOM.txt', sep='\t', header=T, row.names=1, comment.char='', check.names=F)
+#sam <- read.table('samdataNPKM.txt', sep='\t', header=T, row.names=1, comment.char='', check.names=F)
+
+# convert feature table to matrix
+rownames(otu) <- otu$`#OTU ID`
+otu <- otu[,-1]
+otu <- as.matrix(otu)
+
+# convert tax table to matrix
+rownames(tax) <- tax$`#OTU ID`
+tax <- tax[,-1]
+tax <- as.matrix(tax)
+
+names(sam) <- c('density_g_ml', 'qpcr_abund', 'sample_id', 'isotope', 'day', 'fertilizer')
+
+# combine into phyloseq data
+dat <- phyloseq(otu_table(otu, taxa_are_rows=T),
+                tax_table(tax),
+                sample_data(sam))
+save(dat, file='phyloseq_data.RData')
+
+library(qsip)
+load('phyloseq_data.RData')
+
+# specify your qSIP data
+qsip_dat <- specify_qsip(dat,
+                         density='density_g_ml',
+                         abund='qpcr_abund',
+                         rep_id='sample_id',
+                         rep_group='fertilizer',
+                         iso='18O',
+                         iso_trt='isotope',
+                         timepoint='day')
+# specify frequency filtering criteria
+qsip_dat@qsip@filter_levels <- create_filters(2, 2, soft=1)
+
+# atom excess fraction
+qsip_dat1 <- calc_excess(qsip_dat,
+                         separate_label=T,
+                         filter=T,
+                         correction=F)
+atom_excess <- qsip_dat1@qsip[['atom_excess']]
+write.csv(atom_excess,'ape_result.csv')
+
+qsip_dat2 <- calc_pop(qsip_dat,
+                      separate_label=T,
+                      filter=T,
+                      correction=F)
+death_rates <- qsip_dat2@qsip[['death_rate']]
+growth_rates <- qsip_dat2@qsip[['growth_rate']]
+birth_rates <- qsip_dat2@qsip[['birth_rate']]
+write.csv(death_rates,'death_rates.csv')
+write.csv(growth_rates,'growth_rates.csv')
+write.csv(birth_rates,'birth_rates.csv')
